@@ -1,96 +1,43 @@
-import { StatusBar } from "expo-status-bar";
-import {
-  Button,
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  SafeAreaView,
-} from "react-native";
+import React, { useState } from "react";
+import { Text, Image, View, Pressable, ImageBackground } from "react-native";
 
-import Logo from "../assets/hero.jpg";
+import JoinModal from "../components/JoinModal";
 
-export default function LandingPage() {
+export default function LandingScreen({ navigation }) {
+  const [modalVisible, setModalVisible] = useState(false);
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.topContainer}>
-        <Text style={styles.h1}>QuestScape</Text>
-      </View>
-      <View style={styles.middleContainer}>
-        <Image source={Logo} style={styles.image} />
-      </View>
-      <View style={styles.buttonContainer}>
-        <View style={styles.createButtonContainer}>
-          <Button
-            title="Create A Game"
-            style={styles.createButtonContainer}
-            onPress={() => this.onPress()}
-            color="#fff"
-          />
-        </View>
-        <View style={styles.joinButtonContainer}>
-          <Button
-            title="Join A Game"
-            style={styles.joinButtonContainer}
-            onPress={() => this.onPress()}
-            color="#fff"
-          />
-        </View>
-        <StatusBar style="auto" />
-      </View>
-    </SafeAreaView>
+    <View className="h-full w-full">
+      <ImageBackground
+        className="flex-1 items-center justify-center p-12"
+        source={require("../assets/background.png")}
+      >
+        <JoinModal
+          navigation={navigation}
+          modalVisible={modalVisible}
+          toggleModal={setModalVisible}
+        />
+        <Image
+          source={require("../assets/logo.png")}
+          style={{ width: 350, height: 75, marginBottom: 350 }}
+        />
+        <Pressable
+          className="m-2 w-full rounded-3xl border-4 border-[#283D3B] bg-[#ECD7BC] p-2"
+          onPress={() => setModalVisible(true)}
+        >
+          <Text className="text-center text-xl font-semibold text-[#283D3B]">
+            Create a Quest
+          </Text>
+        </Pressable>
+        <Pressable
+          className="m-2 w-full rounded-3xl bg-[#283D3B] p-2"
+          onPress={() => navigation.navigate("Create")}
+        >
+          <Text className="text-center text-xl font-semibold text-[#ECD7BC]">
+            Join a Quest
+          </Text>
+        </Pressable>
+      </ImageBackground>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#deb887",
-    flex: 1,
-    justifyContent: "space-evenly",
-  },
-  topContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 20,
-    padding: 10,
-  },
-  middleContainer: {
-    flex: 3,
-    justifyContent: "flex-start",
-    alignItems: "center",
-  },
-  bottomContainer: {
-    justifyContent: "space-between",
-    width: "90%",
-    margin: 20,
-    padding: 10,
-  },
-  h1: {
-    color: "#87ADDE",
-    fontSize: 48,
-  },
-  buttonContainer: {
-    borderRadius: 10,
-    padding: 8,
-    margin: 8,
-  },
-  createButtonContainer: {
-    marginTop: "auto",
-    backgroundColor: "#8b2861",
-    borderRadius: 10,
-    padding: 8,
-    margin: 8,
-  },
-  joinButtonContainer: {
-    marginTop: "auto",
-    backgroundColor: "#fe9a16",
-    borderRadius: 10,
-    padding: 8,
-    margin: 8,
-  },
-  image: {
-    width: 300,
-    height: 260,
-    justifyContent: "center",
-  },
-});
