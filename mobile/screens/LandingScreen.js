@@ -23,7 +23,7 @@ export default function LandingScreen({ navigation }) {
         />
         <Pressable
           className="m-2 w-full rounded-3xl border-4 border-[#283D3B] bg-[#ECD7BC] p-2"
-          onPress={() => setModalVisible(true)}
+          onPress={() => navigation.navigate("Create")}
         >
           <Text className="text-center text-xl font-semibold text-[#283D3B]">
             Create a Quest
@@ -31,7 +31,7 @@ export default function LandingScreen({ navigation }) {
         </Pressable>
         <Pressable
           className="m-2 w-full rounded-3xl bg-[#283D3B] p-2"
-          onPress={() => navigation.navigate("Create")}
+          onPress={() => setModalVisible(true)}
         >
           <Text className="text-center text-xl font-semibold text-[#ECD7BC]">
             Join a Quest
