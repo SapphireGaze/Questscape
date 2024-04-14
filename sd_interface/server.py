@@ -33,7 +33,7 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Mount the generated images directory
-app.mount("/generated", StaticFiles(directory="generated"), name="generated")
+# app.mount("/generated", StaticFiles(directory="generated"), name="generated")
 
 # Optionally, create a redirect from /demo.html to /static/demo.html
 @app.get("/demo.html")
@@ -49,6 +49,19 @@ class GenerateRequest(BaseModel):
     theme_prompt: Optional[str] = "americana"
     num_images: Optional[int] = 1
     mode: Optional[str] = "fast"
+
+@app.post("/get-map/")
+async def get_map(
+    id: str = Form("1")):
+    if not os.path.exists(f"static/generated/composited_map_final-{id}.png"):
+        print(f"Creating map background image for {id}")
+        # base_image_path = "static/" + img_endpoint.create_map_background(id, "americana")[0]
+        base_image_path = f"static/generated/composited_map_final-661bc17b0b06c14495d10159.png"
+    else:
+        base_image_path = f"static/generated/composited_map_final-{id}.png"
+    
+    return JSONResponse(content={"status": "success", "image": base_image_path})
+    
 
 # POST endpoint for generating images
 @app.post("/generate-images/")
@@ -80,7 +93,7 @@ async def generate_images(
         # For demonstration, returning JSON with the list of image paths
         for generated_image_path in generated_image_paths:
             generated_image_path = generated_image_path.replace("generated/", "http://host.zzimm.com:8080/static/generated/")
-        return JSONResponse(content={"status": "success", "images": generated_image_paths})
+        return JSONResponse(content={"status": "success", "images": "static/"+generated_image_paths[0]})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -91,27 +104,27 @@ async def composite_images(
     theme_prompt: str = Form("americana"),
     ):
 
-    # curl 127.0.0.1:8081/vi/api/play/{id}
     post_data = {
         "waypoints": [{"latitude": 39.5291, "longitude": -119.8146, "clue": "Eldorado", "_id": "661acbbf944eaed13d747eb0"}, {"latitude": 39.5445, "longitude": -119.8159, "clue": "Student Union", "_id": "661acbbf944eaed13d747eb1"}, {"latitude": 39.5247, "longitude": -119.8116, "clue": "Post Office", "_id": "661acbbf944eaed13d747eb2"}, {"latitude": 39.5287, "longitude": -119.808, "clue": "Ballpark", "_id": "661acbbf944eaed13d747eb3"}],
     }
-    # resp = requests.post(f"http://127.0.0.1:8081/v1/api/play/{id}", json=post_data)
-    # print(resp.text)
+    headers = {'Content-Type': 'application/json'}
+    # response = requests.post(f"http://127.0.0.1:8081/v1/api/create/", json=post_data, headers=headers)
+    # print(response.text)
     
-    # api_data = requests.get(f"http://127.0.0.1:8081/v1/api/play/{id}")
+    api_data = requests.get(f"http://127.0.0.1:8081/v1/api/play/{id}")
     # Simulate reading the JSON data from a database or an API response
-    api_data = """
-{
-  "_id": "661acbbf944eaed13d747eae",
-  "waypoints": [
-    {"latitude": 39.5291, "longitude": -119.8146, "clue": "Eldorado", "_id": "661acbbf944eaed13d747eb0"},
-    {"latitude": 39.5445, "longitude": -119.8159, "clue": "Student Union", "_id": "661acbbf944eaed13d747eb1"},
-    {"latitude": 39.5247, "longitude": -119.8116, "clue": "Post Office", "_id": "661acbbf944eaed13d747eb2"},
-    {"latitude": 39.5287, "longitude": -119.8080, "clue": "Ballpark", "_id": "661acbbf944eaed13d747eb3"}
-  ], "__v": 0
-}
-"""
-    data = json.loads(api_data)
+#     api_data = """
+# {
+#   "_id": "661acbbf944eaed13d747eae",
+#   "waypoints": [
+#     {"latitude": 39.5291, "longitude": -119.8146, "clue": "Eldorado", "_id": "661acbbf944eaed13d747eb0"},
+#     {"latitude": 39.5445, "longitude": -119.8159, "clue": "Student Union", "_id": "661acbbf944eaed13d747eb1"},
+#     {"latitude": 39.5247, "longitude": -119.8116, "clue": "Post Office", "_id": "661acbbf944eaed13d747eb2"},
+#     {"latitude": 39.5287, "longitude": -119.8080, "clue": "Ballpark", "_id": "661acbbf944eaed13d747eb3"}
+#   ], "__v": 0
+# }
+# """
+    data = json.loads(api_data.text)
     id = data["_id"]
     coord_list = []
     image_path_list = []
@@ -127,7 +140,7 @@ async def composite_images(
 
     try:
         generated_image_path = get_composite_images_upscaled.generate(id, coord_list, image_path_list, theme_prompt)
-        return JSONResponse(content={"status": "success", "image": generated_image_path})
+        return JSONResponse(content={"status": "success", "image": "static/"+generated_image_path[0]})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

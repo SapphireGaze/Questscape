@@ -88,29 +88,7 @@ def upload_file(file, subfolder="", overwrite=False):
         print(error)
     return path
 
-def generate(base_image, id, sub_id, landmark_type = "post offie building", theme_prompt = "americana", num_images = 1, mode = "fast"):
-
-    model_name = "realisticFantasy_v20.safetensors"
-
-    with open(base_image, "rb") as f:
-        comfyui_path_image = upload_file(f,"",True)
-
-    #load workflow from file
-    if mode == "fast":
-        workflow_name = "workflow_api_fast.json"
-    else:
-        workflow_name = "workflow_api.json"
-    with open(workflow_name, "r", encoding="utf-8") as f:
-        workflow_data = f.read()
-
-    workflow = json.loads(workflow_data)
-    # theme_prompt = "ancient roman"
-    # landmark_type = "post office building"
-    # landmark_type = "student union building"
-    # theme_prompt = "meanacing architecture"
-    # theme_prompt = "illustration"
-    # theme_prompt = "americana"
-    lora_clip_strength = 0.7
+def get_lora_settings(theme_prompt):
     additional_text = ""
     if theme_prompt == "modernist architecture":
         lora_name = "AuthoritarianArchitecture(AD).safetensors"
@@ -125,6 +103,31 @@ def generate(base_image, id, sub_id, landmark_type = "post offie building", them
     if theme_prompt == "americana":
         lora_name = "AmericanaArchitecture-10.safetensors"
         lora_clip_strength = 0.7
+    return lora_name, lora_clip_strength, additional_text
+
+def generate(base_image, id, sub_id, landmark_type = "post offie building", theme_prompt = "americana", num_images = 1, mode = "fast"):
+
+    model_name = "realisticFantasy_v20.safetensors"
+
+    with open(base_image, "rb") as f:
+        comfyui_path_image = upload_file(f,"",True)
+
+    #load workflow from file
+    if mode == "fast":
+        workflow_name = "workflows/workflow_api_fast.json"
+    else:
+        workflow_name = "workflows/workflow_api.json"
+    with open(workflow_name, "r", encoding="utf-8") as f:
+        workflow_data = f.read()
+
+    workflow = json.loads(workflow_data)
+    # theme_prompt = "ancient roman"
+    # landmark_type = "post office building"
+    # landmark_type = "student union building"
+    # theme_prompt = "meanacing architecture"
+    # theme_prompt = "illustration"
+    # theme_prompt = "americana"
+    lora_name, lora_clip_strength, additional_text = get_lora_settings(theme_prompt)
 
 
     #set the text prompt for our positive CLIPTextEncode
@@ -180,7 +183,7 @@ def composite_images(base_image_path, sub_image_path, id, sub_id, sub_x, sub_y):
         sub_image_path = upload_file(f,"",True)
 
     #load workflow from file
-    workflow_name = "workflow_compositemap_api.json"
+    workflow_name = "workflows/workflow_compositemap_api.json"
     with open(workflow_name, "r", encoding="utf-8") as f:
         workflow_data = f.read()
 
@@ -219,7 +222,7 @@ def final_pass(base_image_path, id):
 
 
     #load workflow from file
-    workflow_name = "workflow_finalpass_api.json"
+    workflow_name = "workflows/workflow_finalpass_api.json"
     with open(workflow_name, "r", encoding="utf-8") as f:
         workflow_data = f.read()
 
@@ -248,22 +251,11 @@ def final_pass(base_image_path, id):
 def create_map_background(id, theme_prompt):
     print("Creating map background")
     additional_text = ""
-    if theme_prompt == "modernist architecture":
-        lora_name = "AuthoritarianArchitecture(AD).safetensors"
-        lora_clip_strength = 0.7
-    if theme_prompt == "ancient roman":
-        additional_text = ", year 20 AD"
-        lora_clip_strength = 0.75
-        lora_name = "RomanArchitecture-10.safetensors"
-    if theme_prompt == "illustration":
-        lora_name = "illustratearchitecture.safetensors"
-        lora_clip_strength = 0.6
-    if theme_prompt == "americana":
-        lora_name = "AmericanaArchitecture-10.safetensors"
-        lora_clip_strength = 0.7
+    lora_name, lora_strength, additional_text = get_lora_settings(theme_prompt)
+    
 
     #load workflow from file
-    workflow_name = "workflow_bigmap_api.json"
+    workflow_name = "workflows/workflow_bigmap_api.json"
     with open(workflow_name, "r", encoding="utf-8") as f:
         workflow_data = f.read()
 
@@ -299,23 +291,10 @@ def create_map_background(id, theme_prompt):
 
 def create_placeholder(id, theme_prompt):
     print("Creating placeholder image")
-    additional_text = ""
-    if theme_prompt == "modernist architecture":
-        lora_name = "AuthoritarianArchitecture(AD).safetensors"
-        lora_clip_strength = 0.7
-    if theme_prompt == "ancient roman":
-        additional_text = ", year 20 AD"
-        lora_clip_strength = 0.75
-        lora_name = "RomanArchitecture-10.safetensors"
-    if theme_prompt == "illustration":
-        lora_name = "illustratearchitecture.safetensors"
-        lora_clip_strength = 0.6
-    if theme_prompt == "americana":
-        lora_name = "AmericanaArchitecture-10.safetensors"
-        lora_clip_strength = 0.7
+    lora_name, lora_clip_strength, additional_text = get_lora_settings(theme_prompt)
 
     #load workflow from file
-    workflow_name = "workflow_questionmark_api.json"
+    workflow_name = "workflows/workflow_questionmark_api.json"
     with open(workflow_name, "r", encoding="utf-8") as f:
         workflow_data = f.read()
 
