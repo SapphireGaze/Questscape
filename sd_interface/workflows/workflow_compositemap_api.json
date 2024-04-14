@@ -1,0 +1,102 @@
+{
+  "15": {
+    "inputs": {
+      "image": "ComfyAPI_00102_.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Map Image"
+    }
+  },
+  "24": {
+    "inputs": {
+      "filename_prefix": "ComfyAPI",
+      "images": [
+        "36",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "Save Image"
+    }
+  },
+  "33": {
+    "inputs": {
+      "image": "24-949558241-0.png",
+      "upload": "image"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Location Image"
+    }
+  },
+  "34": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "width": 4096,
+      "height": 4096,
+      "crop": "disabled",
+      "image": [
+        "15",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Upscale Image"
+    }
+  },
+  "36": {
+    "inputs": {
+      "x": 1024,
+      "y": 1024,
+      "resize_source": false,
+      "destination": [
+        "34",
+        0
+      ],
+      "source": [
+        "45",
+        0
+      ],
+      "mask": [
+        "38",
+        0
+      ]
+    },
+    "class_type": "ImageCompositeMasked",
+    "_meta": {
+      "title": "ImageCompositeMasked"
+    }
+  },
+  "38": {
+    "inputs": {
+      "mask": [
+        "33",
+        1
+      ]
+    },
+    "class_type": "InvertMask",
+    "_meta": {
+      "title": "InvertMask"
+    }
+  },
+  "45": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "width": 768,
+      "height": 768,
+      "crop": "disabled",
+      "image": [
+        "33",
+        0
+      ]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Upscale Image"
+    }
+  }
+}

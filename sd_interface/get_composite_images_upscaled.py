@@ -43,6 +43,7 @@ def generate(id, coordList, image_path_list, theme_prompt):
     padding = 768
 
     if not os.path.exists(f"static/generated/background_map-{id}.png"):
+        print(f"Creating map background image for {id} with theme {theme_prompt}")
         base_image_path = "static/" + img_endpoint.create_map_background(id, theme_prompt)[0]
     else:
         base_image_path = f"static/generated/background_map-{id}.png"
@@ -72,9 +73,7 @@ def generate(id, coordList, image_path_list, theme_prompt):
         image_paths = img_endpoint.composite_images(base_image_path, image_path_list[i], id, str(i), adj_x, adj_y)
         base_image_path = image_paths[0]
     # Final pass
-    # composited_map_image = "composited_map-{}-{}.png".format(id, len(image_path_list))
-    # return base_image_path
-    upscaled_final_image_path = img_endpoint.final_pass(base_image_path, id) # TODO implement final_pass
+    upscaled_final_image_path = img_endpoint.final_pass(base_image_path, id) 
     return upscaled_final_image_path
 
 # Eldoraodo : 39.52911124124199, -119.81464350282953
