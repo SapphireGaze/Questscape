@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Generator Demo</title>
+    <style>
+        #docContainer {
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+            display: none; /* Initially hidden */
+        }
+        button {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Generator Demo</h1>
+    <form id="uploadForm">
+        <input type="file" id="imageUpload" accept="image/png, image/jpeg" required>
+        <br>
+        <label for="numImages">ID:</label>
+        <input type="number" id="quest_id" value="1" min="1" max="99999999">
+        <br>
+        <label for="numImages">Sub_ID:</label>
+        <input type="number" id="sub_id" value="1" min="1" max="99999999">
+        <br>
+        <label for="landmarkType">Landmark Type:</label>
+        <select id="landmarkType">
+            <option value="post office building">Post Office Building</option>
+            <option value="student union building">Student Union Building</option>
+        </select>
+        <br>
+        
+        <label for="themePrompt">Theme Prompt:</label>
+        <select id="themePrompt">
+            <option value="americana">Americana</option>
+            <option value="ancient roman">Ancient Roman</option>
+            <option value="modernist architecture">Modernist Architecture</option>
+            <option value="illustration">Illustration</option>
+        </select>
+        <br>
+        <label for="numImages">Number of Images:</label>
+        <input type="number" id="numImages" value="1" min="1" max="10">
+        <br>
+        <label for="mode">Mode:</label>
+        <select id="mode">
+            <option value="fast">Fast</option>
+            <option value="detailed">Detailed</option>
+        </select>
+        <br>
+        <button type="button" onclick="uploadImage()">Generate Images</button>
+        <button type="button" onclick="toggleDocumentation()">Toggle Documentation</button>
+    </form>
+    <div id="imageDisplayArea"></div>
+    <div id="docContainer">
+        <h2>API Documentation</h2>
+        <p>This API endpoint allows users to generate images based on specific themes and landmarks. Below is the information needed to use the API effectively.</p>
+        <h3>POST /generate-images/</h3>
+        <p>Submits data to generate images based on specified parameters. The generated images are returned as a list of image file paths.</p>
+        <h4>Parameters:</h4>
+        <ul>
+            <li><strong>image</strong>: An image file (PNG or JPEG) that serves as the basis for generation.</li>
+
+            <li><strong>id</strong>: Quest id</li>
+            <li><strong>sub_id</strong>: Waypoint id</li>
+            <li><strong>landmark_type</strong>: A string that specifies the type of landmark (e.g., "post office building", "student union building").</li>
+            <li><strong>theme_prompt</strong>: A string that defines the theme of the image (e.g., "americana", "ancient roman"). This parameter affects the artistic styling of the image.</li>
+            <li><strong>num_images</strong>: An integer that specifies how many images to generate.</li>
+            <li><strong>mode</strong>: A string that specifies the speed or detail of image generation ("fast" or "detailed").</li>
+        </ul>
+        <h4>Sample Request:</h4>
+        <code>curl -X POST "http://host.zzimm.com:8080/generate-images/" -F "image=@path/to/image.jpg" -F "id=1" -F "sub_id=1" -F "landmark_type=post office building" -F "theme_prompt=americana" -F "num_images=1" -F "mode=fast"</code>
+    </div>
+
+    <script>
+        function uploadImage() {
+            const imageUpload = document.getElementById('imageUpload');
+            if (!imageUpload.files.length) {
+                document.getElementById('imageDisplayArea').innerText = 'Error: Please upload an image before generating.';
+                return;
+            }
+
+            // Increment the quest_id each time the function is called
+            const questIdInput = document.getElementById('quest_id');
+            let currentQuestId = parseInt(questIdInput.value, 10);
+            questIdInput.value = currentQuestId + 1;  // Increment the quest_id
+
+            const formData = new FormData(document.getElementById('uploadForm'));
+            formData.append('image', imageUpload.files[0]);
+            formData.append('id', document.getElementById('quest_id').value);
+            formData.append('sub_id', document.getElementById('sub_id').value);
+            formData.append('landmark_type', document.getElementById('landmarkType').value);
+            formData.append('theme_prompt', document.getElementById('themePrompt').value);
+            formData.append('num_images', document.getElementById('numImages').value);
+            formData.append('mode', document.getElementById('mode').value);
+
+            fetch('http://host.zzimm.com:8080/generate-images/', {
+                method: 'POST',
+                body: formData,
+            }).then(response => response.json())
+            .then(data => {
+                const displayArea = document.getElementById('imageDisplayArea');
+                displayArea.innerHTML = ''; // Clear previous images
+                if (data.status === 'success') {
+                    data.images.forEach(imagePath => {
+                        const img = new Image();
+                        img.src = imagePath;  // Directly use the image path
+                        displayArea.appendChild(img);
+                    });
+                } else {
+                    displayArea.innerText = 'Error: ' + data.detail;
+                }
+            }).catch(error => {
+                document.getElementById('imageDisplayArea').innerText = 'Error: ' + error.toString();
+            });
+        }
+
+        function toggleDocumentation() {
+            var docContainer = document.getElementById('docContainer');
+            docContainer.style.display = (docContainer.style.display === 'none' || docContainer.style.display === '') ? 'block' : 'none';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('docContainer').style.display = 'none'; // Ensure it is hidden initially
+    });
+    </script>
+</body>
+</html>
