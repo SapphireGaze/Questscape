@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Access Application</title>
+    <style>
+        video, img {
+            width: 100%;   /* Responsive width */
+            height: auto;  /* Maintain aspect ratio */
+        }
+        #captureButton {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Live Camera Feed</h1>
+    <button id="startButton">Start Camera</button> <!-- User must interact to start camera -->
+    <video id="video" autoplay playsinline muted></video> <!-- 'playsinline' and 'muted' for iOS support -->
+    <button id="captureButton">Take Picture</button>
+    <h2>Captured Image</h2>
+    <img id="output" alt="Captured image will appear here...">
+
+    <script>
+        const video = document.getElementById('video');
+        const startButton = document.getElementById('startButton');
+        const captureButton = document.getElementById('captureButton');
+        const output = document.getElementById('output');
+
+        startButton.addEventListener('click', function() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                    video.play(); // Ensure playback starts on mobile devices
+                })
+                .catch(err => {
+                    console.error("Error accessing the camera: ", err);
+                    alert("Cannot access the camera. Please check permissions.");
+                });
+        });
+
+        captureButton.addEventListener('click', function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            output.src = canvas.toDataURL('image/png');
+        });
+    </script>
+</body>
+</html>
