@@ -1,12 +1,14 @@
 import { View, Text, Pressable } from "react-native";
 
+import Map from "../components/Map";
+
 import Icon from "react-native-vector-icons/AntDesign";
 
 export default function PlayScreen({ navigation }) {
   return (
-    <View className="flex-1 bg-[#DEB887] p-12">
+    <View className="flex-1 bg-[#DEB887]">
       <Pressable
-        className="-ml-4 mt-6"
+        className="absolute z-50 ml-6 mt-14"
         onPress={() => navigation.navigate("Landing")}
       >
         <Text className="text-xl font-semibold text-gray-900">
@@ -14,7 +16,7 @@ export default function PlayScreen({ navigation }) {
           &nbsp;Go Back
         </Text>
       </Pressable>
-      <Text>Play</Text>
+      <Map />
     </View>
   );
 }
